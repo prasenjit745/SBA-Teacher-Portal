@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submissions | SBA Faculty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --google-blue: rgb(66, 133, 244); --bg-deep: #0a0f1e; --bg-surface: #161c2d; }
+        body { background-color: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; font-size: 13px; }
+        
+        .navbar { background: var(--bg-surface); border-bottom: 2px solid var(--google-blue); padding: 10px 20px; }
+        .back-nav { color: var(--google-blue); text-decoration: none; font-weight: 600; font-size: 13px; }
+        
+        .hw-card { background: var(--bg-surface); border-radius: 16px; padding: 25px; border: 1px solid #2d3748; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        
+        /* Input & Date Picker Styling */
+        .form-control, .form-select { 
+            background: #1c2539; 
+            border: 1px solid #2d3748; 
+            color: white; 
+            font-size: 13px; 
+            border-radius: 8px; 
+            height: 45px;
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: var(--google-blue); 
+            box-shadow: none; 
+            background: #1c2539; 
+            color: white; 
+        }
+        
+        /* Specific styling to make the date picker icon white/visible */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .table { color: #cbd5e1; border-color: #2d3748; }
+        .table thead { background: rgba(66, 133, 244, 0.1); color: var(--google-blue); font-size: 11px; }
+        
+        .btn-go { background: var(--google-blue); color: white; font-weight: 800; border: none; border-radius: 8px; height: 45px; }
+        .btn-reset { background: transparent; border: 1px solid #4b5563; color: #9ca3af; font-weight: 800; border-radius: 8px; height: 45px; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+        
+        .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+        .bg-reviewed { background: #15803d; color: #bbf7d0; }
+        .bg-pending { background: #854d0e; color: #fef08a; }
+        
+        .modal-content { background: var(--bg-surface); border: 1px solid var(--google-blue); border-radius: 16px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="/dashboard" class="back-nav me-3">← DASHBOARD</a>
+            <h6 class="mb-0 fw-bold">SALT BROOK ACADEMY</h6>
+        </div>
+        <span class="badge bg-dark border border-secondary">Instructor: {{ name }}</span>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1">Homework Submissions</h4>
+        <p class="text-muted small">Viewing records for <span class="text-white fw-bold">{{ dept }}</span></p>
+    </div>
+
+    <div class="hw-card mb-4">
+        <form action="/submissions" method="GET" class="row g-2 align-items-end">
+            <div class="col-md-2">
+                <label class="small text-muted mb-1 d-block text-uppercase fw-bold">Class</label>
+                <select name="class_sel" class="form-select">
+                    <option value="">All</option>
+                    <option value="XI" {% if sel_class == 'XI' %}selected{% endif %}>XI</option>
+                    <option value="XII" {% if sel_class == 'XII' %}selected{% endif %}>XII</option>
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label class="small text-muted mb-1 d-block text-uppercase fw-bold">Submission Date</label>
+                <input type="date" name="sub_date" class="form-control" value="{{ sel_date or '' }}">
+            </div>
+
+            <div class="col-md-3">
+                <label class="small text-muted mb-1 d-block text-uppercase fw-bold">Roll Number</label>
+                <input type="text" name="search_roll" class="form-control" placeholder="Search..." value="{{ search_roll or '' }}">
+            </div>
+            
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-go w-100 fw-bold">FILTER</button>
+            </div>
+            <div class="col-md-2">
+                <a href="/submissions" class="btn btn-reset w-100 fw-bold">RESET</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="hw-card p-0 overflow-hidden">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Submitted On</th>
+                    <th>Student Name</th>
+                    <th>Roll No</th>
+                    <th>Class</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in submissions %}
+                <tr class="align-middle border-bottom border-dark">
+                    <td class="ps-4">
+                        <div class="fw-bold text-white">{{ sub.submission_date.strftime('%d-%m-%Y') }}</div>
+                        <div class="small text-muted">{{ sub.submission_date.strftime('%I:%M %p') }}</div>
+                    </td>
+                    <td class="fw-bold">{{ sub.student_name }}</td>
+                    <td>{{ sub.roll_no }}</td>
+                    <td><span class="badge bg-dark border border-secondary">CL {{ sub.student_class }}</span></td>
+                    <td>
+                        {% if sub.status == 'Reviewed' %}
+                            <span class="status-badge bg-reviewed">REVIEWED</span>
+                        {% else %}
+                            <span class="status-badge bg-pending">PENDING</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-4">
+                        <a href="{{ url_for('static', filename=sub.filename) }}" target="_blank" class="btn btn-sm btn-primary fw-bold px-3">VIEW</a>
+                        <button class="btn btn-sm btn-outline-info fw-bold ms-1" data-bs-toggle="modal" data-bs-target="#revModal{{ sub.id }}">REVIEW</button>
+                    </td>
+                </tr>
+
+                <div class="modal fade" id="revModal{{ sub.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <form action="/post_feedback" method="POST" enctype="multipart/form-data">
+                                <div class="modal-header border-secondary">
+                                    <h6 class="modal-title">Review Submission - {{ sub.student_name }}</h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="submission_id" value="{{ sub.id }}">
+                                    <div class="mb-3">
+                                        <label class="small text-muted mb-2 d-block">Teacher Feedback</label>
+                                        <textarea name="comment" class="form-control" rows="3" placeholder="Enter comments...">{{ sub.teacher_comment or '' }}</textarea>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="small text-muted mb-2 d-block">Solution PDF (Optional)</label>
+                                        <input type="file" name="solution_pdf" class="form-control" accept=".pdf">
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-secondary">
+                                    <button type="submit" class="btn btn-primary w-100 fw-bold">SAVE FEEDBACK</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">No submissions found for the selected criteria.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

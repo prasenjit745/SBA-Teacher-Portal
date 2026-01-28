@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBA Faculty | Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html { height: 100%; margin: 0; font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .main-container { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: #1e293b; width: 100%; max-width: 400px; padding: 40px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); text-align: center; }
+        
+        .logo-wrapper {
+            width: 90px; height: 90px; background-color: #ffffff; border-radius: 50%;
+            margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center;
+            border: 3px solid #6366f1; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .logo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+        .welcome-text { color: #f8fafc; font-weight: 700; font-size: 22px; margin-bottom: 5px; }
+        .portal-label { color: #818cf8; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px; display: block; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        
+        .form-label { color: #cbd5e1; font-size: 13px; font-weight: 500; margin-bottom: 8px; display: block; text-align: left; }
+        .form-control { background-color: #0f172a !important; border: 1px solid #334155; border-radius: 8px; height: 48px; color: #ffffff !important; margin-bottom: 20px; }
+        .form-control:focus { border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); outline: none; }
+        
+        .btn-teacher { 
+            background-color: #6366f1; color: white; border: none; height: 48px; font-weight: 600; 
+            border-radius: 8px; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-teacher:hover { background-color: #4f46e5; transform: translateY(-1px); }
+        .btn-teacher:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        .alert-box { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; font-size: 14px; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="login-card">
+        <div class="logo-wrapper">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="SBA Logo">
+        </div>
+
+        <h2 class="welcome-text">Salt Brook Academy</h2>
+        <span class="portal-label">Faculty Portal Login</span>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert-box d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-lock-fill me-2" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.158 7.158 0 0 0 1.048-.625 11.777 11.777 0 0 0 2.517-2.453c1.678-2.195 2.893-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 5a1.5 1.5 0 0 1 .5 2.915l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99A1.5 1.5 0 0 1 8 5z"/>
+                </svg>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+        <form action="/login_logic" method="POST" id="loginForm">
+            <label class="form-label">UserId</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter UserId" required autocomplete="off">
+            
+            <label class="form-label">Passkword</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            
+            <button type="submit" class="btn-teacher" id="loginBtn">
+                <span id="btnText">Secure Authorization</span>
+                <div id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></div>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+
+    loginForm.addEventListener('submit', function() {
+        loginBtn.disabled = true;
+        btnText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+    });
+</script>
+
+</body>
+</html>

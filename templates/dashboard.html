@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBA Faculty Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --google-blue: rgb(66, 133, 244);
+            --google-blue-glow: rgba(66, 133, 244, 0.2);
+            --bg-deep: #0a0f1e; 
+            --bg-surface: #161c2d;
+            --text-white: #ffffff;
+            --text-dim: #94a3b8;
+            --border-color: #2d3748;
+        }
+        
+        body, html { 
+            min-height: 100%; 
+            margin: 0; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg-deep); 
+            color: var(--text-white); 
+        }
+        
+        .navbar { 
+            background: var(--bg-surface); 
+            border-bottom: 2px solid var(--google-blue); 
+            padding: 12px 0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .round-logo { 
+            width: 40px; height: 40px; border-radius: 50%; 
+            object-fit: cover; margin-right: 12px; 
+            border: 1px solid var(--google-blue);
+        }
+        
+        .nav-brand-text { font-weight: 800; font-size: 18px; margin: 0; color: #ffffff; letter-spacing: 0.5px; }
+        .nav-location { color: var(--google-blue); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        
+        .hero-banner { 
+            background: var(--bg-surface); 
+            padding: 35px; 
+            border-radius: 16px;
+            margin-top: 30px;
+            border-left: 5px solid var(--google-blue); 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        .welcome-msg { color: var(--google-blue); font-size: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; }
+        .teacher-name { font-size: 32px; font-weight: 800; color: #ffffff; margin-top: 5px; }
+        .badge-faculty { 
+            background: rgba(66, 133, 244, 0.1); 
+            color: var(--google-blue); 
+            padding: 6px 14px; 
+            border-radius: 8px; 
+            font-size: 12px; 
+            font-weight: 700; 
+            border: 1px solid var(--google-blue-glow); 
+        }
+
+        .alert-custom {
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-top: 20px;
+        }
+
+        .menu-card { 
+            background: var(--bg-surface); 
+            border: 1px solid var(--border-color); 
+            border-radius: 18px; 
+            padding: 28px 15px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            text-align: center; 
+            height: 100%; 
+            text-decoration: none !important; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .menu-card:hover { 
+            transform: translateY(-8px); 
+            border-color: var(--google-blue); 
+            box-shadow: 0 12px 24px rgba(66, 133, 244, 0.15);
+            background: #1c2539;
+        }
+        
+        .icon-box { 
+            width: 58px; height: 58px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border-radius: 14px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; margin-bottom: 18px; 
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+            color: #ffffff;
+        }
+        .menu-card:hover .icon-box {
+            background: var(--google-blue);
+            border-color: var(--google-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .menu-title { color: #ffffff; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+        .menu-desc { color: var(--text-dim); font-size: 11px; font-weight: 500; }
+
+        .btn-logout { 
+            font-weight: 700; font-size: 12px; border-radius: 8px; 
+            padding: 9px 18px; border: 1.5px solid #ef4444; color: #ef4444; 
+            background: transparent; transition: 0.3s; text-decoration: none;
+        }
+        .btn-logout:hover { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" class="round-logo" alt="SBA Logo">
+            <div>
+                <p class="nav-brand-text">SALT BROOK ACADEMY</p>
+                <span class="nav-location">FACULTY PORTAL • SESSION 2026</span>
+            </div>
+        </div>
+        <a href="/logout" class="btn btn-logout">Sign Out</a>
+    </div>
+    
+</nav>
+
+<div class="container pb-5">
+    <header class="hero-banner">
+        <p class="welcome-msg mb-1">Authenticated Instructor Access</p>
+        <h1 class="teacher-name">{{ name }}</h1>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+            <span class="badge-faculty">{{ dept }} Department</span>
+            <span class="badge-faculty">Staff ID: {{ contact }}</span>
+            <span class="badge-faculty bg-success bg-opacity-10 text-success border-success">Session: 2026-27</span>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show alert-custom p-3" role="alert">
+            <div class="d-flex align-items-center">
+                <span class="me-2">🔔</span>
+                <span><strong>System:</strong> {{ message }}</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="py-5">
+        <div class="row g-3 g-md-4">
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/attendance" class="menu-card">
+                    <div class="icon-box">📝</div>
+                    <p class="menu-title">Attendance</p>
+                    <p class="menu-desc">Daily Student Logs</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/marks_entry" class="menu-card">
+                    <div class="icon-box">📊</div>
+                    <p class="menu-title">Marks Entry</p>
+                    <p class="menu-desc">Grade Management</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/homework" class="menu-card">
+                    <div class="icon-box">✍️</div>
+                    <p class="menu-title">Homework</p>
+                    <p class="menu-desc">Post Assignments</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+            <a href="/submissions" class="menu-card">
+               <div class="icon-box">📤</div>
+               <p class="menu-title">Submissions</p>
+               <p class="menu-desc">Review Student Work</p>
+            </a>
+           </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/study_material" class="menu-card">
+                    <div class="icon-box">📚</div>
+                    <p class="menu-title">Study Material</p>
+                    <p class="menu-desc">Notes & Resources</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/online_exam" class="menu-card">
+                    <div class="icon-box">💻</div>
+                    <p class="menu-title">Online Exam</p>
+                    <p class="menu-desc">Paper Builder & Tests</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/online_class" class="menu-card">
+                    <div class="icon-box">🎥</div>
+                    <p class="menu-title">Online Class</p>
+                    <p class="menu-desc">Live Zoom Sessions</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/calendar" class="menu-card">
+                    <div class="icon-box">🗓️</div>
+                    <p class="menu-title">Calendar</p>
+                    <p class="menu-desc">Academic Timeline</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/messages" class="menu-card">
+                    <div class="icon-box">💬</div>
+                    <p class="menu-title">Messages</p>
+                    <p class="menu-desc">Admin Bulletins & Broadcasts</p>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="/settings" class="menu-card">
+                    <div class="icon-box">⚙️</div>
+                    <p class="menu-title">Settings</p>
+                    <p class="menu-desc">Profile & Security</p>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-5 border-top border-secondary mx-5" style="color: #4a5568; font-size: 11px; font-weight: 600;">
+    &copy; 2026 SALT BROOK ACADEMY • DIBRUGARH • ERP PORTAL
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

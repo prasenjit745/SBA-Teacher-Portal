@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBA Calendar | Salt Brook Academy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        body, html { min-height: 100%; margin: 0; font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        
+        /* Navbar Styling */
+        .navbar { background: #161c2d; border-bottom: 2px solid rgb(66, 133, 244); padding: 12px 20px; }
+        .back-nav { color: rgb(66, 133, 244); text-decoration: none; font-weight: 700; font-size: 13px; display: flex; align-items: center; }
+        .back-nav:hover { color: #ffffff; }
+        
+        /* Hero Banner */
+        .hero-banner { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px 0; border-bottom: 1px solid #334155; }
+        .welcome-msg { color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; }
+        
+        /* Calendar Container */
+        .calendar-card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 20px; margin-top: -20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .cal-table { width: 100%; border-collapse: separate; border-spacing: 8px; table-layout: fixed; }
+        .cal-header th { color: #94a3b8; font-size: 12px; text-transform: uppercase; text-align: center; font-weight: 800; padding-bottom: 20px; letter-spacing: 1px; }
+        
+        /* Day Box Logic */
+        .day-box { 
+            min-height: 100px; 
+            background: #0f172a; 
+            border-radius: 14px; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            border: 1px solid #334155;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .day-box:hover { border-color: rgb(66, 133, 244); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        
+        .day-num { font-weight: 800; font-size: 18px; line-height: 1; }
+        .day-label { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: auto; padding-top: 6px; letter-spacing: 0.5px; }
+        
+        /* Event Colors */
+        /* 1. Holiday (Red) */
+        .event-active { background-color: rgba(153, 27, 27, 0.3) !important; border: 1px solid #ef4444 !important; }
+        .holiday-label { color: #fca5a5 !important; }
+
+        /* 2. Exam/Live Class Day (Blue/Green) */
+        .event-exam { background-color: rgba(30, 64, 175, 0.3) !important; border: 1px solid #60a5fa !important; }
+        .exam-label { color: #93c5fd !important; }
+        
+        .event-live { background-color: rgba(16, 185, 129, 0.2) !important; border: 1px solid #10b981 !important; }
+        .live-label { color: #6ee7b7 !important; }
+
+        .event-text { color: #ffffff; font-size: 10px; font-weight: 700; text-align: center; margin-top: 6px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+        /* Sunday & Others */
+        .sunday-box { background-color: #1e293b; opacity: 0.8; }
+        .sun-text { color: #ef4444 !important; }
+        .class-label { color: rgb(66, 133, 244); }
+
+        /* Navigation Buttons */
+        .nav-btn { background: #334155; color: white; text-decoration: none; padding: 10px 25px; border-radius: 10px; font-size: 12px; font-weight: 800; border: 1px solid #475569; transition: 0.2s; }
+        .nav-btn:hover { background: rgb(66, 133, 244); border-color: rgb(66, 133, 244); color: white; }
+
+        /* Stats Cards */
+        .stat-card { padding: 15px; border-radius: 15px; border: 1px solid #334155; text-align: center; transition: 0.3s; }
+        .stat-val { font-size: 24px; font-weight: 900; display: block; line-height: 1; margin-bottom: 5px; }
+        .stat-title { font-size: 10px; text-transform: uppercase; font-weight: 700; color: #94a3b8; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+{% set counts = {'class': 0, 'holiday': 0, 'sunday': 0} %}
+{% for week in cal %}
+    {% for day in week %}
+        {% if day != 0 %}
+            {% set is_sunday = loop.index == 7 %}
+            {% set event_name = event_map.get(day) %}
+            
+            {# Detect special academic events #}
+            {% set is_exam = event_name and 'Exam' in event_name %}
+            {% set is_live = event_name and 'Live Class' in event_name %}
+
+            {% if is_exam or is_live %}
+                {# If it is an Exam or Live Class, count as Academic Day #}
+                {% if counts.update({'class': counts.class + 1}) %}{% endif %}
+            {% elif event_name %}
+                {# Other events are Holidays #}
+                {% if counts.update({'holiday': counts.holiday + 1}) %}{% endif %}
+            {% elif is_sunday %}
+                {# Pure Sunday with no events #}
+                {% if counts.update({'sunday': counts.sunday + 1}) %}{% endif %}
+            {% else %}
+                {# Regular school day #}
+                {% if counts.update({'class': counts.class + 1}) %}{% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+<nav class="navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="/dashboard" class="back-nav me-4">← DASHBOARD</a>
+            <h6 class="mb-0 fw-bold" style="letter-spacing: 1px;">SALT BROOK ACADEMY</h6>
+        </div>
+        <div>
+            <span class="badge bg-dark border border-secondary p-2 px-3">Session 2026-27</span>
+        </div>
+    </div>
+</nav>
+
+<header class="hero-banner">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end">
+            <div>
+                <p class="welcome-msg mb-2">Institutional Timeline</p>
+                <h1 class="fw-bold mb-0 text-white">{{ month_name }} {{ year }}</h1>
+            </div>
+            <div class="d-flex gap-2 mb-1">
+                <a href="/calendar?month={{ month-1 }}&year={{ year }}" class="nav-btn">PREVIOUS</a>
+                <a href="/calendar?month={{ month+1 }}&year={{ year }}" class="nav-btn">NEXT MONTH</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="calendar-card">
+        <table class="cal-table">
+            <thead>
+                <tr class="cal-header">
+                    <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th class="sun-text">Sun</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in cal %}
+                <tr>
+                    {% for day in week %}
+                        <td>
+                            {% if day != 0 %}
+                                {% set is_sunday = loop.index == 7 %}
+                                {% set event_name = event_map.get(day) %}
+                                {% set is_exam = event_name and 'Exam' in event_name %}
+                                {% set is_live = event_name and 'Live Class' in event_name %}
+                                
+                                <div class="day-box 
+                                    {% if is_live %}event-live
+                                    {% elif is_exam %}event-exam
+                                    {% elif event_name %}event-active
+                                    {% elif is_sunday %}sunday-box{% endif %}">
+                                    
+                                    <span class="day-num {% if is_sunday and not event_name %}sun-text{% endif %}">{{ day }}</span>
+                                    
+                                    {% if is_live %}
+                                        <span class="event-text">{{ event_name }}</span>
+                                        <span class="day-label class-label">Class Day</span>
+                                    {% elif is_exam %}
+                                        <span class="event-text">{{ event_name }}</span>
+                                        <span class="day-label exam-label">Online Exam</span>
+                                    {% elif event_name %}
+                                        <span class="event-text">{{ event_name }}</span>
+                                        <span class="day-label holiday-label">Holiday</span>
+                                    {% elif is_sunday %}
+                                        <span class="day-label" style="color: #94a3b8;">Rest Day</span>
+                                    {% else %}
+                                        <span class="day-label class-label">Class Day</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-5 pt-4 border-top border-secondary">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="stat-card" style="background: rgba(66, 133, 244, 0.1);">
+                        <span class="stat-title">Academic Days</span>
+                        <span class="stat-val" style="color: #60a5fa;">{{ counts.class }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card" style="background: rgba(239, 68, 68, 0.1);">
+                        <span class="stat-title">Total Holidays</span>
+                        <span class="stat-val" style="color: #ef4444;">{{ counts.holiday }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card" style="background: rgba(148, 163, 184, 0.1);">
+                        <span class="stat-title">Sundays/Off</span>
+                        <span class="stat-val text-white">{{ counts.sunday }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-4 text-secondary small">
+    &copy; 2026 Salt Brook Academy • Powered by SBA IT Cell
+</footer>
+
+</body>
+</html>

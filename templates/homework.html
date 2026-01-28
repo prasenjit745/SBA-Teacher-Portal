@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Homework | SBA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --google-blue: rgb(66, 133, 244); --bg-deep: #0a0f1e; --bg-surface: #161c2d; }
+        body { background-color: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .navbar { background: var(--bg-surface); border-bottom: 2px solid var(--google-blue); padding: 10px 20px; }
+        .hw-card { background: var(--bg-surface); border-radius: 16px; padding: 30px; border: 1px solid #2d3748; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .form-label { font-weight: 600; color: var(--google-blue); font-size: 13px; text-transform: uppercase; }
+        .form-control { background: #1c2539; border: 1px solid #2d3748; color: white; border-radius: 8px; }
+        .form-control:focus { background: #1c2539; color: white; border-color: var(--google-blue); box-shadow: none; }
+        .btn-post { background: var(--google-blue); color: white; font-weight: 800; border: none; padding: 12px; border-radius: 8px; transition: 0.3s; }
+        .btn-post:hover { background: #3367d6; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="/dashboard" class="text-decoration-none me-3" style="color: var(--google-blue);">← DASHBOARD</a>
+            <h6 class="mb-0 fw-bold">SALT BROOK ACADEMY</h6>
+        </div>
+        <span class="badge bg-dark border border-secondary">Instructor: {{ name }}</span>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="hw-card">
+                <h4 class="fw-bold mb-1">Post New Assignment</h4>
+                <p class="text-muted small mb-4">Subject: <span class="text-white fw-bold">{{ dept }}</span></p>
+                
+                <form action="/homework" method="POST" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Target Class</label>
+                            <select name="student_class" class="form-select form-control" required>
+                                <option value="XI">Class XI</option>
+                                <option value="XII">Class XII</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Due Date</label>
+                            <input type="date" name="due_date" class="form-control" required>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label">Homework Description / Questions (Text Mode)</label>
+                            <textarea name="description" class="form-control" rows="5" placeholder="Write the assignment details or questions here..."></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Upload PDF Reference (Optional)</label>
+                            <input type="file" name="hw_file" class="form-control" accept=".pdf">
+                            <div class="form-text text-muted">Max file size: 5MB. Only PDF allowed.</div>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-post w-100">POST ASSIGNMENT TO STUDENTS</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
