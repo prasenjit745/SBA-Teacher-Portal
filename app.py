@@ -35,6 +35,9 @@ def get_db_connection():
         print(f"Database Connection Error: {err}")
         return None
 # --- AUTHENTICATION ROUTES ---
+@app.route('/sw.js')
+def serve_sw():
+    return app.send_static_file('sw.js')
 
 @app.route('/')
 def index():
